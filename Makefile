@@ -1,4 +1,5 @@
 TARGETS := $(shell ls scripts)
+ARCH ?= $(shell uname -m)
 
 .dapper:
 	@echo Downloading dapper
@@ -8,13 +9,13 @@ TARGETS := $(shell ls scripts)
 	@mv .dapper.tmp .dapper
 
 $(TARGETS): .dapper
-	./.dapper $@
+	./.dapper -f Dockerfile.dapper.$(ARCH) $@
 
 trash: .dapper
-	./.dapper -m bind trash
+	./.dapper -f Dockerfile.dapper.$(ARCH) -m bind trash
 
 trash-keep: .dapper
-	./.dapper -m bind trash -k
+	./.dapper -f Dockerfile.dapper.$(ARCH) -m bind trash -k
 
 deps: trash
 

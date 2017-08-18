@@ -1,0 +1,33 @@
+# FROM arm32v6/ubuntu:16.04
+FROM arm32v7/ubuntu:16.04
+
+RUN apt-get -q update && \
+    apt-get -qy install gcc ca-certificates git wget curl vim less file && \
+    rm -f /bin/sh && ln -s /bin/bash /bin/sh
+
+ENV ARCH=armv6l
+
+ENV GOLANG_ARCH=${ARCH} \
+    GOPATH=/go \
+    PATH=/go/bin:/usr/local/go/bin:${PATH} \
+    SHELL=/bin/bash \
+    GO_URL=https://storage.googleapis.com/golang/go1.8.linux-${ARCH}.tar.gz \
+    DOCKER_URL=https://github.com/rancher/docker/releases/download/v1.10.3-ros1/docker-1.10.3_arm
+
+RUN wget -O - ${GO_URL} | tar -xzf - -C /usr/local && \
+    go get github.com/rancher/trash && \
+    go get github.com/golang/lint/golint
+
+RUN wget -O - ${DOCKER_URL} > /usr/bin/docker && \
+    chmod +x /usr/bin/docker
+
+ENV DAPPER_SOURCE /go/src/github.com/rancher/scheduler/
+ENV DAPPER_OUTPUT ./bin ./dist
+ENV DAPPER_DOCKER_SOCKET true
+ENV DAPPER_ENV REPO TAG
+ENV TRASH_CACHE ${DAPPER_SOURCE}/.trash-cache
+ENV HOME ${DAPPER_SOURCE}
+WORKDIR ${DAPPER_SOURCE}
+
+ENTRYPOINT ["./scripts/entry"]
+CMD ["ci"]
