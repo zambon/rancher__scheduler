@@ -5,7 +5,7 @@ ENV HOST_ARCH=${DAPPER_HOST_ARCH} ARCH=${DAPPER_HOST_ARCH}
 
 RUN apt-get -q update && \
     apt-get -qy install gcc ca-certificates git wget curl vim less file && \
-    rm -f /var/lib/apt/lists/* && \
+    rm -rf /var/lib/apt/lists/* && \
     rm -f /bin/sh && ln -s /bin/bash /bin/sh
 
 ENV GOLANG_ARCH_amd64=amd64 GOLANG_ARCH_arm=armv6l GOLANG_ARCH_ppc64le=ppc64le \
